@@ -8,9 +8,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Sail-X API')
     .setDescription('UVIMCO Case Study API Documentation')
-    .addBearerAuth()
     .setVersion('0.0.1')
-    .addServer(process.env.SERVER)
     .build();
 
   /**
