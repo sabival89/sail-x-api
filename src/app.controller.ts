@@ -16,7 +16,12 @@ export class AppController {
    * @param params
    * @returns
    */
-  @Get('sailx/:ticker')
+  @Get('/sailx/:ticker')
+  @ApiParam({
+    name: 'ticker',
+    example: 'SPY',
+    description: 'Specify only one ticker symbol.',
+  })
   findHistoricalPrices(
     @Param('ticker') ticker: string,
     @Query() params: TickerDto,
@@ -32,15 +37,27 @@ export class AppController {
    * @param params
    * @returns
    */
-  @Get('sailx/:tickers')
-  @ApiParam({ name: 'tickers', example: 'SPY,AAPL' })
+  @Get('/sailx/:ticker/:benchmark/tickers')
+  @ApiParam({
+    name: 'ticker',
+    example: 'SPY',
+  })
+  @ApiParam({
+    name: 'benchmark',
+    example: 'AAPL',
+  })
   findHistoricalPricesWithBenchmark(
-    @Param('tickers') tickers: string,
+    @Param('ticker') ticker: string,
+    @Param('benchmark') benchmark: string,
     @Query() params: TickerDto,
   ) {
-    return this.appService.findHistoricalPrices(tickers, {
-      ...params,
-    });
+    return this.appService.findHistoricalPricesWithBenchmark(
+      ticker,
+      benchmark,
+      {
+        ...params,
+      },
+    );
   }
 
   /**
@@ -48,7 +65,7 @@ export class AppController {
    * @param params
    * @returns
    */
-  @Get('sailx/symbols')
+  @Get('/symbols')
   getAllSymbols(
     @Query()
     params: PaginationDto,

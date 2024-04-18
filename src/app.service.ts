@@ -17,7 +17,7 @@ type DailyReturn = {
   close: number;
   priceDate: string;
   symbol: string;
-  earnings?: number;
+  earnings: number;
 };
 
 @Injectable()
@@ -44,40 +44,64 @@ export class AppService {
    * @returns
    */
   async findHistoricalPrices(ticker: string, tickerDto: TickerDto) {
+    const trimmedTicker =
+      ticker.indexOf(',') > -1
+        ? ticker.substring(0, ticker.indexOf(','))
+        : ticker;
+
     const { data } = await this.api(this.iex_url.historic_prices, {
-      path: ticker,
+      path: trimmedTicker,
       searchParams: TickerMapper.toDomain(tickerDto),
     });
 
-    const cleandata: Array<DailyReturn> = data.map(
-      ({ close, priceDate, symbol, earnings }) => ({
-        close,
-        priceDate,
-        symbol,
-        earnings,
-      }),
-    );
+    const historicalDataProps = this.extractHistoricalDataProps(data);
 
-    const res = cleandata.length ? this.calculateDailyReturns(cleandata) : [];
+    const result = historicalDataProps.length
+      ? this.calculateDailyReturns(historicalDataProps)
+      : [];
 
     return {
-      data: res,
-      totalRecords: res.length || 0,
+      data: result,
+      totalRecords: result.length || 0,
     };
   }
 
-  async findHistoricalPricesWithBenchmark() {}
+  async findHistoricalPricesWithBenchmark(
+    ticker: string,
+    benchmark: string,
+    tickerDto: TickerDto,
+  ) {
+    //TODO ADD decorator validation for benchmark and ticker
+    const { data } = await this.api(this.iex_url.historic_prices, {
+      path: `${ticker},${benchmark}`,
+      searchParams: TickerMapper.toDomain(tickerDto),
+    });
+
+    const historicalDataProps = this.extractHistoricalDataProps(data);
+
+    const tickerAverageDailyReturn = this.calculateAverageDailyReturn(
+      historicalDataProps.filter((data) => data.symbol === ticker),
+    );
+
+    const benchmarkAverageDailyReturn = this.calculateAverageDailyReturn(
+      historicalDataProps.filter((data) => data.symbol === benchmark),
+    );
+
+    const alpha = tickerAverageDailyReturn - benchmarkAverageDailyReturn;
+
+    return { alpha };
+  }
 
   /**
    *
    * @param param0
    * @returns
    */
-  async getAllSymbols({ last, offset, limit }) {
+  async getAllSymbols(params) {
     const { data } = await this.api(this.iex_url.ticker_symbols, {
-      searchParams: omitBy({ limit, offset, last }, isUndefined),
+      searchParams: omitBy({ ...params }, isUndefined),
     });
-    return data;
+    return { data, totalRecords: data.length || 0 };
   }
 
   /**
@@ -107,6 +131,19 @@ export class AppService {
     return [...historicEarnings, ...lastDailyReturn];
   }
 
+  calculateAverageDailyReturn(historicData: Array<DailyReturn>): number {
+    const dailyReturns = this.calculateDailyReturns(historicData);
+
+    const total = dailyReturns.reduce(
+      (sum, dailyReturn) => sum + dailyReturn.earnings,
+      0,
+    );
+
+    const average = total / dailyReturns.length;
+
+    return average;
+  }
+
   /**
    *
    * @param url
@@ -129,5 +166,19 @@ export class AppService {
           }),
         ),
     );
+  }
+
+  /**
+   *
+   * @param data
+   * @returns
+   */
+  extractHistoricalDataProps(data: Array<DailyReturn>): Array<DailyReturn> {
+    return data.map(({ close, priceDate, symbol, earnings }) => ({
+      close,
+      priceDate,
+      symbol,
+      earnings: earnings || 0,
+    }));
   }
 }
