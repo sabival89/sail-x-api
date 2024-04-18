@@ -1,6 +1,7 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiTags } from '@nestjs/swagger';
+import { TickerDto } from './dto/ticker.dto';
 
 @ApiTags('Historial Data')
 @Controller()
@@ -16,10 +17,8 @@ export class AppController {
   @Get(':ticker')
   findHistoricalPrices(
     @Param('ticker') ticker: string,
-    @Query('start_date') startDate: string,
-    @Query('end_date') endDate: string,
+    @Query() tickerDto: TickerDto,
   ) {
-    console.log({ ticker, startDate }, endDate);
-    return this.appService.findHistoricalPrices(ticker);
+    return this.appService.findHistoricalPrices(ticker, tickerDto);
   }
 }
