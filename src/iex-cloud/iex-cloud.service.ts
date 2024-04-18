@@ -10,6 +10,7 @@ export class IEXService {
   readonly historic_prices: string;
   readonly company_info: string;
   readonly company_logo: string;
+  readonly ticker_symbols: string;
 
   /**
    *
@@ -23,5 +24,7 @@ export class IEXService {
     this.company_info = this.config.get('IEX_COMPANY_INFO_URL');
 
     this.company_logo = this.config.get('IEX_COMPANY_LOGO_URL');
+
+    this.ticker_symbols = this.config.get('IEX_SYMBOLS_URL');
   }
 }

@@ -1,8 +1,9 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { AppService } from './app.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
 
 import { TickerDto } from './dto/ticker.dto';
+import { PaginationDto } from './dto/pagination.dto';
 
 @ApiTags('Historial Data')
 @Controller()
@@ -10,19 +11,48 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   /**
-   * Handler for retrieving only one ticker's historic data
+   *
    * @param ticker
+   * @param params
    * @returns
    */
-  @Get(':ticker')
+  @Get('sailx/:ticker')
   findHistoricalPrices(
     @Param('ticker') ticker: string,
-    @Query() { from_date, to_date, date_range }: TickerDto,
+    @Query() params: TickerDto,
   ) {
     return this.appService.findHistoricalPrices(ticker, {
-      to_date,
-      from_date,
-      date_range,
+      ...params,
     });
+  }
+
+  /**
+   *
+   * @param tickers
+   * @param params
+   * @returns
+   */
+  @Get('sailx/:tickers')
+  @ApiParam({ name: 'tickers', example: 'SPY,AAPL' })
+  findHistoricalPricesWithBenchmark(
+    @Param('tickers') tickers: string,
+    @Query() params: TickerDto,
+  ) {
+    return this.appService.findHistoricalPrices(tickers, {
+      ...params,
+    });
+  }
+
+  /**
+   *
+   * @param params
+   * @returns
+   */
+  @Get('sailx/symbols')
+  getAllSymbols(
+    @Query()
+    params: PaginationDto,
+  ) {
+    return this.appService.getAllSymbols({ ...params });
   }
 }
