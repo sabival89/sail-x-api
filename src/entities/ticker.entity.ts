@@ -5,6 +5,9 @@ export class Ticker {
   to?: string;
   range?: DateRangeTypeEnum;
 
+  /**
+   * Represents a time range for fetching historical data.
+   */
   constructor(from?: string, to?: string, range?: DateRangeTypeEnum) {
     this.from = from;
     this.to = to;

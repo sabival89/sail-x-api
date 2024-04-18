@@ -13,18 +13,27 @@ export class IEXService {
   readonly ticker_symbols: string;
 
   /**
+   * Constructs an instance of the ApiService by initializing various URLs
+   * from the configuration service.
    *
-   * @param config
+   * @param config - The configuration service containing necessary URLs.
    */
   constructor(private config: ConfigService) {
-    this.token = this.config.get('IEX_TOKEN');
+    try {
+      this.token = this.config.get('IEX_TOKEN');
 
-    this.historic_prices = this.config.get('IEX_HISTORIC_PRICES_URL');
+      this.historic_prices = this.config.get('IEX_HISTORIC_PRICES_URL');
 
-    this.company_info = this.config.get('IEX_COMPANY_INFO_URL');
+      this.company_info = this.config.get('IEX_COMPANY_INFO_URL');
 
-    this.company_logo = this.config.get('IEX_COMPANY_LOGO_URL');
+      this.company_logo = this.config.get('IEX_COMPANY_LOGO_URL');
 
-    this.ticker_symbols = this.config.get('IEX_SYMBOLS_URL');
+      this.ticker_symbols = this.config.get('IEX_SYMBOLS_URL');
+    } catch (error) {
+      // Handle any errors that occur during initialization
+      console.error('Error occurred during ApiService initialization:', error);
+      // Optionally rethrow the error if it should be handled elsewhere
+      throw error;
+    }
   }
 }

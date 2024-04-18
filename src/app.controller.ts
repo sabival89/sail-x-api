@@ -3,15 +3,14 @@ import { AppService } from './app.service';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 
 import { TickerDto } from './dto/ticker.dto';
-import { PaginationDto } from './dto/pagination.dto';
 
-@ApiTags('Historial Data')
+@ApiTags('Historical Prices Endpoint')
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
   /**
-   *
+   * Handle request to retrieve daily returns for a given symbol over a specified time period
    * @param ticker
    * @param params
    * @returns
@@ -32,8 +31,9 @@ export class AppController {
   }
 
   /**
-   *
-   * @param tickers
+   * Handle request to retrieve the alpha value of the ticker vs. the benchmark over a specified time period
+   * @param ticker
+   * @param benchmark
    * @param params
    * @returns
    */
@@ -61,14 +61,14 @@ export class AppController {
   }
 
   /**
-   *
+   * Handle request to retrieve all ticker symbols info
    * @param params
    * @returns
    */
   @Get('/symbols')
   getAllSymbols(
     @Query()
-    params: PaginationDto,
+    params,
   ) {
     return this.appService.getAllSymbols({ ...params });
   }

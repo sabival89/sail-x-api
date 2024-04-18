@@ -26,16 +26,27 @@ export class TickerDto {
   @Optional()
   date_range: DateRangeTypeEnum;
 
+  /**
+   * Returns an object containing the start date of the current year and the current date.
+   *
+   * @returns An object with 'start' representing the start date of the current year in YYYY-MM-DD format,
+   * and 'now' representing the current date in YYYY-MM-DD format.
+   */
   static date() {
+    // Get the current date
     const date = new Date();
+
+    // Extract the year from the current date
     const year = date.getFullYear();
+
+    // Extract the month from the current date and format it with leading zeros
     const month = (date.getUTCMonth() + 1).toLocaleString('en-US', {
       minimumIntegerDigits: 2,
     });
 
     return {
-      start: `${year}-01-01`,
-      now: `${year}-${month}-${date.getDate()}`,
+      start: `${year}-01-01`, // Start date of the current year
+      now: `${year}-${month}-${date.getDate()}`, // Current date
     };
   }
 }
