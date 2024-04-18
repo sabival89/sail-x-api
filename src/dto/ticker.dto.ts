@@ -17,10 +17,9 @@ export class TickerDto {
 
   @ApiProperty({
     name: 'date_range',
-    description: 'y=Year_To_Date | 6m=Six_Months | y=One_Year | 5d=Five_Days',
+    description: 'y=Year To Date | 6m=Six Months | y=One Year | 5d=Five Days',
     enum: DateRangeTypeEnum,
     enumName: 'date_range',
-    // example: DateRangeTypeEnum.Year_To_Date,
     required: false,
   })
   @IsEnum(DateRangeTypeEnum)
@@ -32,12 +31,11 @@ export class TickerDto {
     const year = date.getFullYear();
     const month = (date.getUTCMonth() + 1).toLocaleString('en-US', {
       minimumIntegerDigits: 2,
-      useGrouping: false,
     });
 
-    const start = `${year}-01-01`;
-    const now = `${year}-${month}-${date.getDate()}`;
-
-    return { start, now };
+    return {
+      start: `${year}-01-01`,
+      now: `${year}-${month}-${date.getDate()}`,
+    };
   }
 }
