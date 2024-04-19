@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    volumes:
+      - ./:/usr/src/app
+    container_name: sail-x-api
+    ports:
+      - 3001:3000
